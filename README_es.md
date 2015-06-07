@@ -23,7 +23,7 @@ Características
     posibilidad de adaptarla a las necesidades del usuario).
 
 - Historial de órdenes
-    + Crea un objeto **singleton** invocable (**callable**) llamado `history`
+    + Crea un objeto *singleton* invocable (*callable*) llamado `history`
     y lo pone dentro del objeto `__builtins__,` para hacerlo fácilmente
     accesible, el cual permite el manejo del historial de órdenes (guardar
     algunas de las líneas introducidas a un fichero de su elección, listar las
@@ -32,7 +32,7 @@ Características
     miembros (con `dir(history)` o `help(history.write)`) para más información.
 
 - Símbolo de entrada de órdenes en color
-    + Instaura un **prompt** colorido, si el terminal lo soporta.
+    + Instaura un *prompt* colorido, si el terminal lo soporta.
 
 
 Instalación
@@ -89,7 +89,7 @@ Se puede desactivar la inclusión del paréntesis de cierre; si lo hace, podría
 también estar interesado en modificar la variable `dict_keywords_postfix` (en
 especial las cadenas que actúan de índices de ese diccionario).
 
-- IPython tiene su propia **magia** `%history`. He hecho lo posible para no
+- IPython tiene su propia *magia* `%history`. He hecho lo posible para no
 interferir con ella, pero desconozco las consecuencias reales. Además, es
 discutible si tiene sentido usar este código con IPython y/o BPython (aunque
 tener unificado el historial para todos los entornos es agradable).
