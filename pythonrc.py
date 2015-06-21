@@ -191,7 +191,7 @@ def init():
 
         def __init__(self, path=default_history_file, length=500):
             self.path = path
-            self.recall(path)
+            self.reload(path)
             self.set_length(length)
 
         def __exit__(self):
@@ -236,7 +236,7 @@ def init():
                 return (self.get_item(i) for i in myrange(pos, end + 1))
 
         def reload(self, path=""):
-            """clear the current history and recall it from saved"""
+            """clear the current history and reload it from saved"""
             readline.clear_history()
             if isfile(path):
                 self.path = path
