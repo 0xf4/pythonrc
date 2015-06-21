@@ -139,6 +139,20 @@ def init():
     default_history_file = '~/.pythonhist'
     majver = sys.version_info[0]
 
+    # Both BPython and Django shell change the nature of the __builtins__
+    # object. This hack workarounds that:
+    def builtin_setattr(attr, value):
+        if hasattr(__builtins__, '__dict__'):
+            setattr(__builtins__, attr, value)
+        else:
+            __builtins__[attr] = value
+
+    def builtin_getattr(attr):
+        if hasattr(__builtins__, '__dict__'):
+            return getattr(__builtins__, attr)
+        else:
+            return __builtins__[attr]
+
     # My own "six" library, where I define the following stubs:
     # * myrange for xrange() (python2) / range() (python3)
     # * exec_stub for exec()
@@ -160,7 +174,7 @@ def init():
         #     # the "in" & "," make it valid python2 syntax, do nothing useful
         #     exec(textcode, globalz, localz) in globalz #, localz
         # the three previous lines work, but this is better
-        exec_stub = getattr(__builtins__, 'exec')
+        exec_stub = builtin_getattr('exec')
 
         def iteritems(d):
             return list(d.items())
@@ -221,7 +235,7 @@ def init():
             else:
                 return (self.get_item(i) for i in myrange(pos, end + 1))
 
-        def recall(self, path=""):
+        def reload(self, path=""):
             """clear the current history and recall it from saved"""
             readline.clear_history()
             if isfile(path):
@@ -257,6 +271,7 @@ def init():
 
     # Activate completion and make it smarter
     class Irlcompleter(rlcompleter.Completer):
+
         """
         This class enables the insertion of "indentation" if there's no text
         for completion.
@@ -270,6 +285,7 @@ def init():
         parenthesis, and whatever you've defined in dict_keywords_postfix --
         spaces, colons, etc.)
         """
+
         def __init__(
             self,
             indent_str='    ',
@@ -413,11 +429,7 @@ def init():
                              dict_keywords_postfix=dict_keywords_postfix)
     readline.set_completer(completer.complete)
     history = History(history_path, history_length)
-    # bpython changes __builtins__ nature, hence this hack:
-    if hasattr(__builtins__, '__dict__'):
-        __builtins__.history = history
-    else:
-        __builtins__['history'] = history
+    builtin_setattr('history', history)
     atexit.register(history.__exit__)
 
 # run the initialization and clean up the environment
