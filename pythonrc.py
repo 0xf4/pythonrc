@@ -294,9 +294,9 @@ def init():
             dict_keywords_postfix={" ": ["import", "from"], },
             add_closing_parenthesis=True
         ):
-            self.indent_str_list = [indent_str, None]
-            rlcompleter.Completer.__init__(self)
+            rlcompleter.Completer.__init__(self, namespace=globals())
             readline.set_completer_delims(delims)
+            self.indent_str_list = [indent_str, None]
             for bind in binds:
                 readline.parse_and_bind(bind)
             self.dict_keywords_postfix = dict_keywords_postfix
@@ -336,9 +336,9 @@ def init():
                     return txt + ')'
                 else:
                     return txt
-            for c, words in iteritems(self.dict_keywords_postfix):
+            for postfix, words in iteritems(self.dict_keywords_postfix):
                 if txt in words:
-                    return txt + c
+                    return txt + postfix
             return txt
 
         def complete_files(self, text, state):
