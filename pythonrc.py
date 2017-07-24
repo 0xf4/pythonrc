@@ -34,6 +34,10 @@ Features
 - Color prompt
     + Puts a colorful prompt in place, if the terminal supports it.
 
+- Implementation of a bash's "operate-and-get-next" clone
+    + Enables a quick re-edition of a code block from the history by
+    successive keypresses of the `Ctrl-o` hotkey.
+
 
 Installation
 ------------
@@ -55,7 +59,8 @@ documentation).
 export PYTHONSTARTUP=~/.python/pythonrc.py
 export PYTHON_HISTORY_FILE=~/.python/.python_history
 
-## You may want to also uncomment some of this lines if using virtualenvwrapper
+## You may want to also uncomment some of this lines if using an old
+## version of virtualenvwrapper
 # export VIRTUALENVWRAPPER_PYTHON=/usr/bin/python3.4
 # export WORKON_HOME=~/.python/virtualenvs
 # source $(which virtualenvwrapper.sh)

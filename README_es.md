@@ -34,10 +34,14 @@ Características
 - Símbolo de entrada de órdenes en color
     + Instaura un *prompt* colorido, si el terminal lo soporta.
 
+- Implementación de una réplica de la función "operate-and-get-next" de bash
+    + Permite la reedición rápida de un bloque de código del historial mediante
+    pulsaciones sucesivas de la combinación de teclas `Ctrl-o`
+
 
 Instalación
 ------------
-- Debe definirse en el entorno (en GNU/Linux y MacOS X esto, generalmente, se
+- Debe definirse en el entorno (en GNU/Linux y MacOS X, esto, generalmente, se
 refiere al fichero `~/.bashrc`) la variable `PYTHONSTARTUP` conteniendo la ruta
 a `pythonrc.py`
 
@@ -55,7 +59,8 @@ consulte la documentación de BPython).
 export PYTHONSTARTUP=~/.python/pythonrc.py
 export PYTHON_HISTORY_FILE=~/.python/.python_history
 
-## Podría querer "descomentar" también estas líneas si usa virtualenvwrapper
+## Podría querer "descomentar" también estas líneas si usa una versión
+## antigua de virtualenvwrapper
 # export VIRTUALENVWRAPPER_PYTHON=/usr/bin/python3.4
 # export WORKON_HOME=~/.python/virtualenvs
 # source $(which virtualenvwrapper.sh)
