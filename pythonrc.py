@@ -116,6 +116,9 @@ def init():
 
     term_with_colors = ['xterm', 'xterm-color', 'xterm-256color', 'linux',
                         'screen', 'screen-256color', 'screen-bce']
+    red = ''
+    green = ''
+    reset = ''
     if os.environ.get('TERM') in term_with_colors:
         escapes_pattern = '\001\033[%sm\002'  # \001 and \002 mark non-printing
         red = escapes_pattern % '31'
@@ -123,12 +126,15 @@ def init():
         reset = escapes_pattern % '0'
         sys.ps1 = red + '>>> ' + reset
         sys.ps2 = green + '... ' + reset
+    red = red.strip('\001\002')
+    green = green.strip('\001\002')
+    reset = reset.strip('\001\002')
 
     # readline (tab-completion, history)
     try:
         import readline
     except ImportError:
-        print("Module 'readline' not available. Skipping user customizations.")
+        print(red + "Module 'readline' not available. Skipping user customizations." + reset)
         return
     import rlcompleter
     import atexit
@@ -428,7 +434,15 @@ def init():
     completer = Irlcompleter(delims=readline_delims,  # binds=readline_binds,
                              dict_keywords_postfix=dict_keywords_postfix)
     readline.set_completer(completer.complete)
+
+    if not os.access(history_path, os.F_OK):
+        print(green + 'History file %s does not exist. Creating it...' % history_path + reset)
+        with open(history_path, 'w') as f:
+            pass
+    elif not os.access(history_path, os.R_OK|os.W_OK):
+        print(red + 'History file %s has wrong permissions!' % history_path + reset)
     history = History(history_path, history_length)
+
     builtin_setattr('history', history)
     atexit.register(history.__exit__)
 
