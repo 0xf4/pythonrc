@@ -443,9 +443,56 @@ def init():
         print(red + 'History file %s has wrong permissions!' % history_path + reset)
     history = History(history_path, history_length)
 
+    #
+    # Hack: Implementation of bash-like "operate-and-get-next" (Ctrl-o)
+    #
+    try:
+        # We'll hook the C functions that we need from the underlying
+        # libreadline implementation that aren't exposed by the readline
+        # python module.
+        from ctypes import CDLL, CFUNCTYPE, c_int
+
+        librl = CDLL(readline.__file__)
+        rl_callback = CFUNCTYPE(c_int, c_int, c_int)
+        rl_int_void = CFUNCTYPE(c_int)
+
+        readline.add_defun = librl.rl_add_defun # didn't bother to define args
+        readline.accept_line = rl_callback(librl.rl_newline)
+        readline.previous_history = rl_callback(librl.rl_get_previous_history)
+        readline.where_history = rl_int_void(librl.where_history)
+
+        def pre_input_hook_factory(offset, char):
+            def rewind_history_pre_input_hook():
+                # Uninstall this hook, rewind history and redisplay
+                readline.set_pre_input_hook(None)
+                result = readline.previous_history(offset, char)
+                readline.redisplay()
+                return result
+            return rewind_history_pre_input_hook
+
+        @rl_callback
+        def operate_and_get_next(count, char):
+            current_line = readline.where_history()
+            offset = readline.get_current_history_length() - current_line
+            # Accept the current line and set the hook to rewind history
+            result = readline.accept_line(1, char)
+            readline.set_pre_input_hook(pre_input_hook_factory(offset, char))
+            return result
+
+        # Hook our function to Ctrl-o, and hold a reference to it to avoid GC
+        readline.add_defun('operate-and-get-next', operate_and_get_next, ord("O") & 0x1f)
+        history._readline_functions = [operate_and_get_next]
+
+    except (ImportError, OSError, AttributeError) as e:
+        print(red + """
+            Couldn't either bridge the needed methods from binary 'readline'
+            or properly install our implementation of 'operate-and-get-next'.
+            Skipping the hack. Underlying error:
+            """ + reset + repr(e))
+
     builtin_setattr('history', history)
     atexit.register(history.__exit__)
 
-# run the initialization and clean up the environment
+# run the initialization and clean up the environment afterwards
 init()
 del init
