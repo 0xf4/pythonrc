@@ -143,9 +143,14 @@ def init():
         return
     import rlcompleter
     import atexit
-    from pwd import getpwall
     from os.path import isfile, isdir, expanduser, \
         join as joinpath, split as splitpath, sep as pathsep
+    # If pwd.getpwall doesn't exist (e.g. Android's termux), mock it
+    try:
+        from pwd import getpwall
+    except ImportError:
+        from pwd import getpwuid
+        getpwall = lambda: [getpwuid(0)]
 
     default_history_file = '~/.pythonhist'
     majver = sys.version_info[0]
